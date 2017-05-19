@@ -1,6 +1,7 @@
 package io.hellsing.data;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -8,25 +9,30 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.Arrays;
 
+import javax.servlet.ServletContext;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.WebApplicationContext;
 
 
 public class PersistenceDAOImpl implements PersistenceDAO {
 	
-//	@Autowired
-//	private WebApplicationContext wac;
+	@Autowired
+	private ServletContext context;
 	
-	private static final String ACCOUNTDB="/WEB-INF/accounts.csv";
+	private static final String ACCOUNTDB="WEB-INF/accounts.csv";
 
 	@Override
-	public void writeNewUserToFile(User user, WebApplicationContext wac) {
-		InputStream is = wac.getServletContext().getResourceAsStream(ACCOUNTDB);
+	public void writeNewUserToFile(User user) {
+		System.out.println("writeNewUserToFile");
+		System.out.println(context.getRealPath(ACCOUNTDB));
+
 		try {
-			PrintWriter pw = new PrintWriter(new FileWriter(ACCOUNTDB, true));
+			PrintWriter pw = new PrintWriter(new FileWriter(context.getRealPath(ACCOUNTDB), true));
 			pw.println(user.getEmail()+","+user.getPassword());
 			pw.close();
+			//pw.
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -34,8 +40,6 @@ public class PersistenceDAOImpl implements PersistenceDAO {
 
 	@Override
 	public void loadFromFile(String email) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override

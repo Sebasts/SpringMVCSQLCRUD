@@ -70,8 +70,8 @@ public class MemoController {
 			mv.setViewName("accountCreation.jsp");
 			return mv;
 		}
-		
-		pdao.writeToFile(user, wac);
+		System.out.println("validate.do");
+		pdao.writeNewUserToFile(user);
 		mv.setViewName("accountMemos.jsp");
 		
 		return mv;

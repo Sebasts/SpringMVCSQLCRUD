@@ -7,5 +7,5 @@ public interface PersistenceDAO {
 	void loadFromFile(String email);
 	boolean doesThisAccountExist(User user, WebApplicationContext wac);
 	boolean doesThisPasswordMatch(User user, WebApplicationContext wac);
-	void writeNewUserToFile(User user, WebApplicationContext wac);
+	void writeNewUserToFile(User user);
 }
