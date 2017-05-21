@@ -14,4 +14,5 @@
 <bean id="pdao" class="io.hellsing.data.PersistenceDAOImpl"></bean>
 <bean id="vdao" class="io.hellsing.data.ValidateDAOImpl"></bean>
 <mvc:annotation-driven />
+<mvc:resources mapping="/WEB-INF/**" location="/WEB-INF/Master.css" />
 </beans>
