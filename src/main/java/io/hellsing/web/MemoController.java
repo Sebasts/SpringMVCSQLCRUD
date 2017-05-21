@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.ModelAndView;
 
+import io.hellsing.data.Memo;
 import io.hellsing.data.MemoDAO;
 import io.hellsing.data.PersistenceDAO;
 import io.hellsing.data.User;
@@ -44,16 +45,29 @@ public class MemoController {
 	@RequestMapping("login.do")
 	public ModelAndView loginPage(){
 		ModelAndView mv = new ModelAndView();
-		
-		
+		User user = new User();
+		mv.addObject("user", user);
 		mv.setViewName("login.jsp");
 		return mv;
 	}
+	
+	@RequestMapping("newMemo.do")
+	public ModelAndView loginPage(User user, String name, String content){
+		ModelAndView mv = new ModelAndView();
+		System.out.println(user);
+		user.addMemo(new Memo(name, content));
+		pdao.writeToFile(user, wac);
+		mv.addObject("user", user);
+		mv.addObject("memo", user.getMemos());
+		mv.setViewName("accountMemos.jsp");
+		return mv;
+	}
+	
 	@RequestMapping("register.do")
 	public ModelAndView accountRegistration(){
 		ModelAndView mv = new ModelAndView();
 		User user = new User();
-		
+		mv.addObject("memo", user.getMemos());
 		mv.addObject("user", user);
 		mv.setViewName("accountCreation.jsp");
 		return mv;
@@ -72,6 +86,7 @@ public class MemoController {
 		}
 		System.out.println("validate.do");
 		pdao.writeNewUserToFile(user);
+		mv.addObject("user", user);
 		mv.setViewName("accountMemos.jsp");
 		
 		return mv;
@@ -86,6 +101,9 @@ public class MemoController {
 			System.out.println("It worked 1");
 			if(vdao.passwordMatches(user)){
 				System.out.println("It worked 2");
+				user.setMemos(pdao.loadFromFile(user.getEmail()));
+				mv.addObject("memo", user.getMemos());
+				mv.addObject("user", user);
 				mv.setViewName("accountMemos.jsp");
 				return mv;
 			}

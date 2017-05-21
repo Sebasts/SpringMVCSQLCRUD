@@ -1,9 +1,9 @@
 package io.hellsing.data;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -22,10 +22,13 @@ public class User {
 	private String firstName;
 	@Size(min=2, max=35)
 	private String lastName;
-
-	private List<Memo> memos;
 	
-	public User() { }
+	
+	private List<Memo> memos = new ArrayList<>();
+	
+	public User() { 
+		memos.add(new Memo("Hello", "This is your first memo!"));
+	}
 	
 	public User(String e, String fn, String ln, String p) {
 		this.email = e;
@@ -80,7 +83,22 @@ public class User {
 		this.memos = memos;
 	}
 	
+	public void addMemo(Memo memo){
+		memos.add(memo);
+	}
 	
+	public String getMemosInSavableFormat(){
+		StringBuilder br = new StringBuilder();
+		
+		for (Memo memo : memos) {
+			if(memos.indexOf(memo) == memos.size()-1){
+				br.append(memo.getName() + "|"+ memo.getContent());
+			} else{
+			br.append(memo.getName() + "|" +  memo.getContent() + "|");
+			}
+		}
+		return br.toString();
+	}
 	
 	
 }

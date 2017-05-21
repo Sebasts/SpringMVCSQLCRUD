@@ -9,11 +9,17 @@
 </head>
 <body>
 <div id="loginBox" >
-<form action="loginAttempt.do" method="POST" modelAttribute="user">
-Email: <input type="text" name="email" />
-Password: <input type="password" name="password" />
-<button type="submit">Login</button>
-</form>
+<form:form action="loginAttempt.do" method="POST" modelAttribute="user">
+  <form:input path="email" />
+  <form:errors path="email" />
+  <br />
+  <form:input path="password" />
+  <form:errors path="password" />
+  <br />
+  <input type="submit" value="Login" />
+</form:form>
+
+
 </div>
 
 </body>
