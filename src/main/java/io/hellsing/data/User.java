@@ -100,5 +100,9 @@ public class User {
 		return br.toString();
 	}
 	
+	public void deleteMemo(int index){
+		memos.remove(index);
+	}
+	
 	
 }

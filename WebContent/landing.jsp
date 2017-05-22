@@ -11,8 +11,8 @@
 <body>
 <div id="nav"><h1>Welcome to Remember This!</h1></div>
 <div id="landingOptions">
-<a href="login.do"><div class="divContent"><p class="innerp1">Login</p></div></a>
-<a href="register.do"><div class="divContent"><p class="innerp1">Register</p></div></a>
+<div class="contentHolder"><a href="login.do"><div class="divContent"><p class="innerp1">Login</p></div></a></div>
+<div class="contentHolder"><a href="register.do"><div class="divContent"><p class="innerp1">Register</p></div></a></div>
 </div>
 </body>
 </html>

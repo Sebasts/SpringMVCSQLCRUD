@@ -1,5 +1,7 @@
 package io.hellsing.web;
 
+import java.util.List;
+
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,6 +58,19 @@ public class MemoController {
 		ModelAndView mv = new ModelAndView();
 		System.out.println(user);
 		user.addMemo(new Memo(name, content));
+		pdao.writeToFile(user, wac);
+		mv.addObject("user", user);
+		mv.addObject("memo", user.getMemos());
+		mv.setViewName("accountMemos.jsp");
+		return mv;
+	}
+	@RequestMapping(path="deleteMemo.do")
+	public ModelAndView loginPage(User user, Integer index){
+		ModelAndView mv = new ModelAndView();
+		System.out.println(user.getMemosInSavableFormat());
+		System.out.println(index);
+		user.deleteMemo(index);
+
 		pdao.writeToFile(user, wac);
 		mv.addObject("user", user);
 		mv.addObject("memo", user.getMemos());

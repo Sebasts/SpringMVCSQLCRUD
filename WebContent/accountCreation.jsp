@@ -14,12 +14,16 @@
 <form:form action="validate.do" method="POST" modelAttribute="user" id="registrationForm">
 <label>First Name
 <form:input path="firstName"/></label><br>
+<form:errors path="firstName" />
 <label>Last Name
 <form:input path="lastName"/></label><br>
+<form:errors path="lastName" />
 <label>Email
 <form:input path="email"/></label><br>
+<form:errors path="email" />
 <label>Password
 <form:input path="password" type="password"/> (Must be atleast 6 characters)</label><br>
+<form:errors path="password" />
 
 
 <button type="submit">Create account!</button>
