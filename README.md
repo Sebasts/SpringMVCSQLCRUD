@@ -2,5 +2,3 @@
 
 In the future, I want to be able to have the user enter a time an date so that the memo can be emailed... or even texted to them at the requested time.
 
-
-There were a lot of stumbling points. Centering a div.. making an entire div clickable. Saving the data to a csv file and reading it back... still some issues there.
