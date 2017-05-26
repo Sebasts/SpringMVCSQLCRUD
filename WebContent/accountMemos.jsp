@@ -28,8 +28,11 @@
 				${memos.name}
 				<form action="deleteMemo.do" method="POST">
 				<input type="hidden" value="${loop.index}" name="index">
-				<p style="color: black" onClick="this.contentEditable='true';">${memos.content}</p>
-
+				<p style="color: black" onClick="this.contentEditable='true';" if="memoContent${loop.index}">${memos.content}</p>
+				<script>
+				 var text = document.getElementById("memoContent${loop.index}").innerHtml;
+				 </script> 
+				<input type="hidden" value="${loop.index}" name="index">
 				<button type="submit" onclick="myFunction()">Remove</button>
 				<script>
 					function myFunction() {

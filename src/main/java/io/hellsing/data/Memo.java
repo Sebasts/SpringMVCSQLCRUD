@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class Memo {
+	private static int id = 1;
 	private String name;
 	private String content;
 	
@@ -11,6 +12,7 @@ public class Memo {
 	public Memo(String name, String content) {
 		this.name = name;
 		this.content = content;
+		id++;
 	}
 	
 	

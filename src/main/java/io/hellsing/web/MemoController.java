@@ -52,6 +52,14 @@ public class MemoController {
 		mv.setViewName("login.jsp");
 		return mv;
 	}
+	@RequestMapping("updateMemo.do")
+	public ModelAndView updateMemo(String text, Integer index, User user){
+		ModelAndView mv = new ModelAndView();
+		System.out.println(text);
+		mv.addObject("user", user);
+		mv.setViewName("accountMemos.jsp");
+		return mv;
+	}
 	
 	@RequestMapping("newMemo.do")
 	public ModelAndView loginPage(User user, String name, String content){
@@ -65,10 +73,11 @@ public class MemoController {
 		return mv;
 	}
 	@RequestMapping(path="deleteMemo.do")
-	public ModelAndView loginPage(User user, Integer index){
+	public ModelAndView loginPage(User user, Integer index, String text){
 		ModelAndView mv = new ModelAndView();
 		System.out.println(user.getMemosInSavableFormat());
 		System.out.println(index);
+		System.out.println(text);
 		user.deleteMemo(index);
 
 		pdao.writeToFile(user, wac);
