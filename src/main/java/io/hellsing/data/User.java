@@ -13,7 +13,9 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class User {
-	@NotNull
+	
+	private int id;
+
 	@Email(message="Invalid email")
 	private String email;
 	@Size(min=6, message="Password must be 6 or more characters")
@@ -30,7 +32,8 @@ public class User {
 		memos.add(new Memo("Hello", "This is your first memo!"));
 	}
 	
-	public User(String e, String fn, String ln, String p) {
+	public User(int id,String e, String fn, String ln, String p) {
+		this.id = id;
 		this.email = e;
 		this.firstName = fn;
 		this.lastName = ln;
@@ -44,6 +47,8 @@ public class User {
 	public void setEmail(String email) {
 		this.email = email;
 	}
+	
+	
 
 	public String getFirstName() {
 		return firstName;
@@ -87,6 +92,15 @@ public class User {
 		memos.add(memo);
 	}
 	
+	
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
 	public String getMemosInSavableFormat(){
 		StringBuilder br = new StringBuilder();
 		

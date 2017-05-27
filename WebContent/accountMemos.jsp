@@ -6,7 +6,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<link href="<c:url value="/Master.css" />" rel="stylesheet">
+<link href="<c:url value="../Master.css" />" rel="stylesheet">
 <title>Your memos</title>
 </head>
 <body>
@@ -14,8 +14,12 @@
 
 		<div id="newMEMO">
 			<label>Memo title</label><input type="text" name="name"><br>
-			<input type="hidden" name="user" value="${user}"><br> <input
-				type="text" name="content" style="height: 40px; width: 280px;">
+			<input type="hidden" name="id" value="${user.id}">
+			<input type="hidden" name="firstName" value="${user.firstName}">
+			<input type="hidden" name="lastName" value="${user.lastName}">
+			<input type="hidden" name="password" value="${user.password}">
+			<input type="hidden" name="email" value="${user.email}">
+			<textarea name="content" style="height: 40px; width: 280px;"> </textarea>
 			<button type="submit">Create new Memo</button>
 		</div>
 		</label>
@@ -27,12 +31,9 @@
 			<div id="memoBlock" style="color: blue">
 				${memos.name}
 				<form action="deleteMemo.do" method="POST">
+				<input type="hidden" value="${memos.id}" name="id">
 				<input type="hidden" value="${loop.index}" name="index">
-				<p style="color: black" onClick="this.contentEditable='true';" if="memoContent${loop.index}">${memos.content}</p>
-				<script>
-				 var text = document.getElementById("memoContent${loop.index}").innerHtml;
-				 </script> 
-				<input type="hidden" value="${loop.index}" name="index">
+				<p style="color: black" onClick="this.contentEditable='true';" id="memoContent${memos.id}">${memos.content}</p>
 				<button type="submit" onclick="myFunction()">Remove</button>
 				<script>
 					function myFunction() {

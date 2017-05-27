@@ -5,9 +5,10 @@ import java.util.List;
 import org.springframework.web.context.WebApplicationContext;
 
 public interface PersistenceDAO {
-	void writeToDb(User user, WebApplicationContext wac);
+	void writeMemoToDb(User user,String name, String content);
 	List<Memo> loadFromDb(String email);
-	boolean doesThisAccountExist(User user, WebApplicationContext wac);
-	boolean doesThisPasswordMatch(User user, WebApplicationContext wac);
-	void writeNewUserToDB(User user);
+	boolean checkIfThisUserExists(User user);
+	boolean checkIfThisPasswordMatches(User user);
+	void writeNewUserToDb(User user);
+	void deleteMemo(Integer id);
 }

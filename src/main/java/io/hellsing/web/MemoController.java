@@ -40,14 +40,15 @@ public class MemoController {
 	public ModelAndView landingPage(){
 		ModelAndView mv = new ModelAndView();
 		
-		
+		User user = new User();
+		mv.addObject("user", user);
 		mv.setViewName("landing.jsp");
 		return mv;
 	}
 	@RequestMapping("login.do")
-	public ModelAndView loginPage(){
+	public ModelAndView loginPage(User user){
 		ModelAndView mv = new ModelAndView();
-		User user = new User();
+
 		mv.addObject("user", user);
 		mv.setViewName("login.jsp");
 		return mv;
@@ -65,22 +66,21 @@ public class MemoController {
 	public ModelAndView loginPage(User user, String name, String content){
 		ModelAndView mv = new ModelAndView();
 		System.out.println(user);
-		user.addMemo(new Memo(name, content));
-		pdao.writeToFile(user, wac);
+		pdao.writeMemoToDb(user, name, content);
 		mv.addObject("user", user);
 		mv.addObject("memo", user.getMemos());
 		mv.setViewName("accountMemos.jsp");
 		return mv;
 	}
+	
 	@RequestMapping(path="deleteMemo.do")
-	public ModelAndView loginPage(User user, Integer index, String text){
+	public ModelAndView loginPage(User user, Integer id, Integer index){
 		ModelAndView mv = new ModelAndView();
 		System.out.println(user.getMemosInSavableFormat());
-		System.out.println(index);
-		System.out.println(text);
-		user.deleteMemo(index);
 
-		pdao.writeToFile(user, wac);
+		user.deleteMemo(index);
+		pdao.deleteMemo(id);
+		//pdao.writeMemoToDb(user, );
 		mv.addObject("user", user);
 		mv.addObject("memo", user.getMemos());
 		mv.setViewName("accountMemos.jsp");
@@ -88,9 +88,9 @@ public class MemoController {
 	}
 	
 	@RequestMapping("register.do")
-	public ModelAndView accountRegistration(){
+	public ModelAndView accountRegistration(@Valid User user, Errors errors){
 		ModelAndView mv = new ModelAndView();
-		User user = new User();
+
 		mv.addObject("memo", user.getMemos());
 		mv.addObject("user", user);
 		mv.setViewName("accountCreation.jsp");
@@ -99,7 +99,8 @@ public class MemoController {
 	
 	
 	@RequestMapping("validate.do")
-	public ModelAndView landingPage(@Valid User user, Errors Errors){
+	public ModelAndView newAccountPage(@Valid User user, Errors errors, String firstName
+										,String lastName, String email, String password){
 		ModelAndView mv = new ModelAndView();
 		System.out.println(user);
 		if(vdao.accountExists(user)){
@@ -108,15 +109,20 @@ public class MemoController {
 			mv.setViewName("accountCreation.jsp");
 			return mv;
 		}
+		if(errors.getErrorCount() > 0){
+			mv.addObject("user", user);
+			mv.setViewName("accountCreation.jsp");
+			return mv;
+		}
 		System.out.println("validate.do");
-		pdao.writeNewUserToFile(user);
+		pdao.writeNewUserToDb(user);
 		mv.addObject("user", user);
-		mv.setViewName("accountMemos.jsp");
+		mv.setViewName("login.jsp");
 		
 		return mv;
 	}
 	@RequestMapping(path="loginAttempt.do", method=RequestMethod.POST)
-	public ModelAndView loginPage(@Valid User user, Errors Errors, String email, String password){
+	public ModelAndView loginPage(@Valid User user, Errors errors, String email, String password){
 		ModelAndView mv = new ModelAndView();
 		System.out.println(user);
 		user.setEmail(email);
@@ -125,9 +131,10 @@ public class MemoController {
 			System.out.println("It worked 1");
 			if(vdao.passwordMatches(user)){
 				System.out.println("It worked 2");
-				user.setMemos(pdao.loadFromFile(user.getEmail()));
+				user.setMemos(pdao.loadFromDb(user.getEmail()));
 				mv.addObject("memo", user.getMemos());
 				mv.addObject("user", user);
+				System.out.println(user);
 				mv.setViewName("accountMemos.jsp");
 				return mv;
 			}

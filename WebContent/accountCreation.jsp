@@ -5,7 +5,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<link href="<c:url value="/Master.css" />" rel="stylesheet" >
+<link href="<c:url value="../Master.css" />" rel="stylesheet" >
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Insert title here</title>
 </head>
@@ -22,7 +22,7 @@
 <form:input path="email"/></label><br>
 <form:errors path="email" />
 <label>Password
-<form:input path="password" type="password"/> (Must be atleast 6 characters)</label><br>
+<form:input path="password" /> (Must be atleast 6 characters)</label><br>
 <form:errors path="password" />
 
 
