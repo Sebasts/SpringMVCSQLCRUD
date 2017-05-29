@@ -74,10 +74,12 @@ public class User {
 		this.password = password;
 	}
 
+	
+
 	@Override
 	public String toString() {
-		return "User [email=" + email + ", password=" + password + ", firstName=" + firstName + ", lastName=" + lastName
-				 + "]";
+		return "User [id=" + id + ", email=" + email + ", password=" + password + ", firstName=" + firstName
+				+ ", lastName=" + lastName + ", memos=" + memos + "]";
 	}
 
 	public List<Memo> getMemos() {

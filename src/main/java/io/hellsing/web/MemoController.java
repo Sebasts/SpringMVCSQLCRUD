@@ -1,34 +1,31 @@
 package io.hellsing.web;
 
-import java.util.List;
-
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.Errors;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.SessionAttributes;
-import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.ModelAndView;
 
-import io.hellsing.data.Memo;
-import io.hellsing.data.MemoDAO;
 import io.hellsing.data.PersistenceDAO;
 import io.hellsing.data.User;
 import io.hellsing.data.ValidateDAO;
+import io.hellsing.funtionality.Emailer;
 
 @Controller
 @SessionAttributes("user")
 public class MemoController {
-
-//	@ModelAttribute("")
-	@Autowired
-	WebApplicationContext wac;
 	
-	@Autowired
-	MemoDAO mdao;
+	
+	@ModelAttribute
+	public User initUser(){
+		return new User();
+	}
+//	@ModelAttribute("")
 	
 	@Autowired
 	ValidateDAO vdao;
@@ -37,58 +34,77 @@ public class MemoController {
 	PersistenceDAO pdao;
 	
 	@RequestMapping("start.do")
-	public ModelAndView landingPage(){
+	public ModelAndView landingPage(@ModelAttribute("user") User user){
 		ModelAndView mv = new ModelAndView();
 		
-		User user = new User();
+		user = new User();
 		mv.addObject("user", user);
 		mv.setViewName("landing.jsp");
 		return mv;
 	}
-	@RequestMapping("login.do")
-	public ModelAndView loginPage(User user){
+	@RequestMapping("redirect.do")
+	public ModelAndView redirectPostsHere(@ModelAttribute("user") User user){
 		ModelAndView mv = new ModelAndView();
-
+		if(user == null){
+			mv.addObject("user", user);
+			mv.setViewName("login.jsp");
+		}
+		mv.addObject("user", user);
+		mv.addObject("memo", user.getMemos());
+		mv.setViewName("accountMemos.jsp");
+		return mv;
+	}
+	@RequestMapping("login.do")
+	public ModelAndView loginPage(@ModelAttribute("user") User user){
+		ModelAndView mv = new ModelAndView();
+		mv.addObject("user", user);
+		mv.setViewName("login.jsp");
+		Emailer em = new Emailer();
+		em.test();
+		return mv;
+	}
+	@RequestMapping("logout.do")
+	public ModelAndView logout(@ModelAttribute("user") User user){
+		ModelAndView mv = new ModelAndView();
+		user = new User();
 		mv.addObject("user", user);
 		mv.setViewName("login.jsp");
 		return mv;
 	}
 	@RequestMapping("updateMemo.do")
-	public ModelAndView updateMemo(String text, Integer index, User user){
-		ModelAndView mv = new ModelAndView();
-		System.out.println(text);
-		mv.addObject("user", user);
-		mv.setViewName("accountMemos.jsp");
-		return mv;
+	public String updateMemo(String content, String names, Integer memId, @ModelAttribute("user") User user){
+//		System.out.println(text);
+		System.out.println(memId);
+		System.out.println(content);
+		System.out.println(names);
+		System.out.println(user);
+		pdao.updateMemo(memId, names, content, user);
+
+		return "redirect:redirect.do";
 	}
 	
 	@RequestMapping("newMemo.do")
-	public ModelAndView loginPage(User user, String name, String content){
-		ModelAndView mv = new ModelAndView();
+	public String loginPage(@ModelAttribute("user") User user, String name, String content){
 		System.out.println(user);
 		pdao.writeMemoToDb(user, name, content);
-		mv.addObject("user", user);
-		mv.addObject("memo", user.getMemos());
-		mv.setViewName("accountMemos.jsp");
-		return mv;
+		return "redirect:redirect.do";
 	}
 	
 	@RequestMapping(path="deleteMemo.do")
-	public ModelAndView loginPage(User user, Integer id, Integer index){
-		ModelAndView mv = new ModelAndView();
-		System.out.println(user.getMemosInSavableFormat());
-
+	public String deleteMemo(@ModelAttribute("user") User user, Integer memId, Integer index){
+		System.out.println(memId);
+		
 		user.deleteMemo(index);
-		pdao.deleteMemo(id);
+		pdao.deleteMemo(memId, user);
 		//pdao.writeMemoToDb(user, );
-		mv.addObject("user", user);
-		mv.addObject("memo", user.getMemos());
-		mv.setViewName("accountMemos.jsp");
-		return mv;
+//		mv.addObject("user", user);
+//		mv.addObject("memo", user.getMemos());
+//		mv.setViewName("accountMemos.jsp");
+		return "redirect:redirect.do";
 	}
 	
 	@RequestMapping("register.do")
-	public ModelAndView accountRegistration(@Valid User user, Errors errors){
+	public ModelAndView accountRegistration(@Valid @ModelAttribute("user") User user, Errors errors){
 		ModelAndView mv = new ModelAndView();
 
 		mv.addObject("memo", user.getMemos());
@@ -99,7 +115,7 @@ public class MemoController {
 	
 	
 	@RequestMapping("validate.do")
-	public ModelAndView newAccountPage(@Valid User user, Errors errors, String firstName
+	public ModelAndView newAccountPage(@Valid @ModelAttribute("user") User user, Errors errors, String firstName
 										,String lastName, String email, String password){
 		ModelAndView mv = new ModelAndView();
 		System.out.println(user);
@@ -122,9 +138,9 @@ public class MemoController {
 		return mv;
 	}
 	@RequestMapping(path="loginAttempt.do", method=RequestMethod.POST)
-	public ModelAndView loginPage(@Valid User user, Errors errors, String email, String password){
+	public String loginPage(@Valid @ModelAttribute("user") User user, Errors errors, String email, String password){
 		ModelAndView mv = new ModelAndView();
-		System.out.println(user);
+		System.out.println(user + " " + email + " " + password);
 		user.setEmail(email);
 		user.setPassword(password);
 		if(vdao.accountExists(user)){
@@ -132,15 +148,14 @@ public class MemoController {
 			if(vdao.passwordMatches(user)){
 				System.out.println("It worked 2");
 				user.setMemos(pdao.loadFromDb(user.getEmail()));
-				mv.addObject("memo", user.getMemos());
-				mv.addObject("user", user);
-				System.out.println(user);
-				mv.setViewName("accountMemos.jsp");
-				return mv;
+//				mv.addObject("memo", user.getMemos());
+//				mv.addObject("user", user);
+//				System.out.println(user);
+//				mv.setViewName("accountMemos.jsp");
+				return "redirect:redirect.do";
 			}
 		}
-		mv.setViewName("login.jsp");
-		return mv;
+		return "redirect:login.do";
 	}
 	
 	

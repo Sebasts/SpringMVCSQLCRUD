@@ -10,5 +10,6 @@ public interface PersistenceDAO {
 	boolean checkIfThisUserExists(User user);
 	boolean checkIfThisPasswordMatches(User user);
 	void writeNewUserToDb(User user);
-	void deleteMemo(Integer id);
+	void deleteMemo(Integer id, User user);
+	void updateMemo(Integer id, String name, String content, User user);
 }

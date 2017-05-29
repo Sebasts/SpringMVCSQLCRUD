@@ -153,13 +153,114 @@ public class PersistenceDAOImpl implements PersistenceDAO {
 
 	@Override
 	public void writeNewUserToDb(User user) {
-		
+		try {
+			Connection con = DriverManager.getConnection(URL, USER, PASS);
+			con.setAutoCommit(false);
+			String sqlUserInsert = "INSERT INTO user (first_name, last_name, email, password) VALUES(?,?,?,?);";
+			String commit = "COMMIT;";
+			PreparedStatement userStmt = con.prepareStatement(sqlUserInsert,Statement.RETURN_GENERATED_KEYS);
+			PreparedStatement commitStmt = con.prepareStatement(commit);
+			userStmt.setString(1, user.getFirstName());
+			userStmt.setString(2, user.getLastName());
+			userStmt.setString(3, user.getEmail());
+			userStmt.setString(4, user.getPassword());
+			userStmt.executeUpdate();
+			int newId = 0;
+			ResultSet keys = userStmt.getGeneratedKeys();
+			if (keys.next()) {
+				newId = keys.getInt(1);
+				System.out.println(user.getId());
+				System.out.println("new id is = "+ newId);
+				user.setId(newId);
+			}else{
+				throw new SQLException();
+			}
+			commitStmt.executeUpdate();
+			con.close();
+			user.setMemos(loadFromDb(user.getEmail()));
+		} catch (SQLException e) {
+			String rollback = "ROLLBACK;";
+			try {
+				Connection con = DriverManager.getConnection(URL, USER, PASS);
+				PreparedStatement rollbackStmt = con.prepareStatement(rollback);
+				rollbackStmt.executeUpdate(rollback);
+				con.close();
+			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			
+			e.printStackTrace();
+		}
 
 	}
 
 	@Override
-	public void deleteMemo(Integer id) {
-		// TODO Auto-generated method stub
+	public void deleteMemo(Integer id, User user) {
+		try {
+			Connection con = DriverManager.getConnection(URL, USER, PASS);
+			con.setAutoCommit(false);
+			String sqlUpdateUserMemo = "DELETE FROM user_memo where user_id = ? AND memo_id = ?;";
+			String sqlUpdateMemo = "DELETE FROM memo WHERE id = ?;";
+			String commit = "COMMIT;";
+			PreparedStatement memoDStmt = con.prepareStatement(sqlUpdateUserMemo);
+			PreparedStatement memoUStmt = con.prepareStatement(sqlUpdateMemo);
+			PreparedStatement commitStmt = con.prepareStatement(commit);
+			memoUStmt.setInt(1, id);
+			memoDStmt.setInt(1, user.getId());
+			memoDStmt.setInt(2, id);
+			memoDStmt.executeUpdate();
+			memoUStmt.executeUpdate();
+			commitStmt.executeUpdate();
+			con.close();
+			user.setMemos(loadFromDb(user.getEmail()));
+		} catch (SQLException e) {
+			String rollback = "ROLLBACK;";
+			try {
+				Connection con = DriverManager.getConnection(URL, USER, PASS);
+				PreparedStatement rollbackStmt = con.prepareStatement(rollback);
+				rollbackStmt.executeUpdate(rollback);
+				con.close();
+			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			
+			e.printStackTrace();
+		}
+		
+	}
+
+	@Override
+	public void updateMemo(Integer id, String name, String content, User user) {
+		try {
+			Connection con = DriverManager.getConnection(URL, USER, PASS);
+			con.setAutoCommit(false);
+			String sqlUpdateMemo = "UPDATE memo SET title = ?, content = ? WHERE memo.id = ?;";
+			String commit = "COMMIT;";
+			PreparedStatement memoStmt = con.prepareStatement(sqlUpdateMemo);
+			PreparedStatement commitStmt = con.prepareStatement(commit);
+			memoStmt.setString(1, name);
+			memoStmt.setString(2, content);
+			memoStmt.setInt(3, id);
+			memoStmt.executeUpdate();
+			commitStmt.executeUpdate();
+			con.close();
+			user.setMemos(loadFromDb(user.getEmail()));
+		} catch (SQLException e) {
+			String rollback = "ROLLBACK;";
+			try {
+				Connection con = DriverManager.getConnection(URL, USER, PASS);
+				PreparedStatement rollbackStmt = con.prepareStatement(rollback);
+				rollbackStmt.executeUpdate(rollback);
+				con.close();
+			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			
+			e.printStackTrace();
+		}
 		
 	}
 
