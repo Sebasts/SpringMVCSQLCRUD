@@ -7,7 +7,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletContext;
 
@@ -32,29 +34,29 @@ public class PersistenceDAOImpl implements PersistenceDAO {
 	}
 
 	@Override
-	public void writeMemoToDb(User user, String name, String content) {
+	public void writeMemoToDb(User user, String name, String content, String date) {
 		try {
 			Connection con = DriverManager.getConnection(URL, USER, PASS);
 			con.setAutoCommit(false);
-			String sqlMemoInsert = "INSERT INTO memo (title, content) VALUES(?,?);";
-			String sqlUserMemoInsert = "INSERT INTO user_memo (user_id, memo_id)"
-					+" VALUES(?,?);";
+			String sqlMemoInsert = "INSERT INTO memo (title, content,reminder_send_off ) VALUES(?,?,?);";
+			String sqlUserMemoInsert = "INSERT INTO user_memo (user_id, memo_id)" + " VALUES(?,?);";
 			String commit = "COMMIT;";
-			PreparedStatement memoStmt = con.prepareStatement(sqlMemoInsert,Statement.RETURN_GENERATED_KEYS);
+			PreparedStatement memoStmt = con.prepareStatement(sqlMemoInsert, Statement.RETURN_GENERATED_KEYS);
 			PreparedStatement userMemoStmt = con.prepareStatement(sqlUserMemoInsert);
 			PreparedStatement commitStmt = con.prepareStatement(commit);
 			memoStmt.setString(1, name);
 			memoStmt.setString(2, content);
+			memoStmt.setString(3, date);
 			memoStmt.executeUpdate();
 			int newId = 0;
 			ResultSet keys = memoStmt.getGeneratedKeys();
 			if (keys.next()) {
 				newId = keys.getInt(1);
 				System.out.println(user.getId());
-				System.out.println("new id is = "+ newId);
+				System.out.println("new id is = " + newId);
 				userMemoStmt.setInt(1, user.getId());
 				userMemoStmt.setInt(2, newId);
-			}else{
+			} else {
 				throw new SQLException();
 			}
 			userMemoStmt.executeUpdate();
@@ -72,7 +74,7 @@ public class PersistenceDAOImpl implements PersistenceDAO {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-			
+
 			e.printStackTrace();
 		}
 	}
@@ -83,14 +85,13 @@ public class PersistenceDAOImpl implements PersistenceDAO {
 		try {
 			Connection con = DriverManager.getConnection(URL, USER, PASS);
 			String sql = "SELECT m.id, m.title, m.content, m.reminder_send_off FROM memo m JOIN"
-					+ " user_memo um ON um.memo_id = m.id JOIN"
-					+ " user u ON u.id = um.user_id WHERE u.email = ?";
+					+ " user_memo um ON um.memo_id = m.id JOIN" + " user u ON u.id = um.user_id WHERE u.email = ?";
 			PreparedStatement stmt = con.prepareStatement(sql);
 			stmt.setString(1, email);
 			ResultSet rs = stmt.executeQuery();
 			while (rs.next()) {
-				temp.add(new Memo(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getDate(4)));
-				}
+				temp.add(new Memo(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4)));
+			}
 			con.close();
 			return temp;
 
@@ -130,13 +131,13 @@ public class PersistenceDAOImpl implements PersistenceDAO {
 			stmt.setString(1, user.getEmail());
 			ResultSet rs = stmt.executeQuery();
 			if (rs.next()) {
-				if(rs.getString(1).equals(user.getPassword())){
+				if (rs.getString(1).equals(user.getPassword())) {
 					user.setFirstName(rs.getString(2));
 					user.setLastName(rs.getString(3));
 					user.setId(rs.getInt(4));
 					con.close();
-				return true;
-				} else{
+					return true;
+				} else {
 					con.close();
 					return false;
 				}
@@ -158,7 +159,7 @@ public class PersistenceDAOImpl implements PersistenceDAO {
 			con.setAutoCommit(false);
 			String sqlUserInsert = "INSERT INTO user (first_name, last_name, email, password) VALUES(?,?,?,?);";
 			String commit = "COMMIT;";
-			PreparedStatement userStmt = con.prepareStatement(sqlUserInsert,Statement.RETURN_GENERATED_KEYS);
+			PreparedStatement userStmt = con.prepareStatement(sqlUserInsert, Statement.RETURN_GENERATED_KEYS);
 			PreparedStatement commitStmt = con.prepareStatement(commit);
 			userStmt.setString(1, user.getFirstName());
 			userStmt.setString(2, user.getLastName());
@@ -170,9 +171,9 @@ public class PersistenceDAOImpl implements PersistenceDAO {
 			if (keys.next()) {
 				newId = keys.getInt(1);
 				System.out.println(user.getId());
-				System.out.println("new id is = "+ newId);
+				System.out.println("new id is = " + newId);
 				user.setId(newId);
-			}else{
+			} else {
 				throw new SQLException();
 			}
 			commitStmt.executeUpdate();
@@ -189,7 +190,7 @@ public class PersistenceDAOImpl implements PersistenceDAO {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-			
+
 			e.printStackTrace();
 		}
 
@@ -225,10 +226,10 @@ public class PersistenceDAOImpl implements PersistenceDAO {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-			
+
 			e.printStackTrace();
 		}
-		
+
 	}
 
 	@Override
@@ -258,10 +259,50 @@ public class PersistenceDAOImpl implements PersistenceDAO {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-			
+
 			e.printStackTrace();
 		}
-		
+
+	}
+
+	@Override
+	public Map<Integer, String> getSendOffTimes() {
+		Map<Integer, String> memos = new HashMap<>();
+		try {
+			Connection con = DriverManager.getConnection(URL, USER, PASS);
+			String sql = "SELECT id, reminder_send_off FROM memo; ";
+			PreparedStatement stmt = con.prepareStatement(sql);
+			ResultSet rs = stmt.executeQuery();
+			while (rs.next()) {
+				memos.put(rs.getInt(1), rs.getString(2));
+			} 
+				con.close();
+				return memos;
+			
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return memos;
+	}
+
+	@Override
+	public ResultSet getEmailAndMemo(int id) {
+		// select u.email, m.title, m.content FROM user u JOIN user_memo um ON
+		// u.id = um.user_id JOIN memo m ON m.id = um.memo_id WHERE m.id=39;
+		try {
+			Connection con = DriverManager.getConnection(URL, USER, PASS);
+			String sql = "select u.email, m.title, m.content FROM user u JOIN user_memo um ON u.id = um.user_id JOIN memo m ON m.id = um.memo_id WHERE m.id=?;";
+			PreparedStatement stmt = con.prepareStatement(sql);
+			stmt.setInt(1, id);
+			ResultSet rs = stmt.executeQuery();
+			return rs;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 }

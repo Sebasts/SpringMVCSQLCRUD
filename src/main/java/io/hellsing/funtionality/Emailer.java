@@ -14,9 +14,21 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
-public class Emailer {
+public class Emailer implements Runnable {
+	private String receiverEmail;
+	private String emailSubject;
+	private String emailContent;
+	
+	
+	
+	
+	public Emailer(String receiverEmail, String emailSubject, String emailContent) {
+		this.receiverEmail = receiverEmail;
+		this.emailSubject = emailSubject;
+		this.emailContent = emailContent;
+	}
 
-	public void test(){
+	public void sendEmail(String receiverEmail, String emailSubject, String emailContent){
 	    Properties props = System.getProperties();
 	    props.put("mail.smtp.starttls.enable", true); // added this line
 	    props.put("mail.smtp.host", "smtp.gmail.com");
@@ -35,9 +47,9 @@ public class Emailer {
 	    // Create the email addresses involved
 	    try {
 //	        InternetAddress from = new InternetAddress("google@google.com");
-	        message.setSubject("Yes we can");
+	        message.setSubject(emailSubject);
 //	        message.setFrom(from);
-	        message.addRecipients(Message.RecipientType.TO, InternetAddress.parse("sebastian@hellsing.io"));
+	        message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(receiverEmail));
 
 	        // Create a multi-part to combine the parts
 	        Multipart multipart = new MimeMultipart("alternative");
@@ -51,7 +63,7 @@ public class Emailer {
 
 	        // Create the html part
 	        messageBodyPart = new MimeBodyPart();
-	        String htmlMessage = "Our html text";
+	        String htmlMessage = emailContent;
 	        messageBodyPart.setContent(htmlMessage, "text/html");
 
 
@@ -75,5 +87,18 @@ public class Emailer {
 	        // TODO Auto-generated catch block
 	        e.printStackTrace();
 	    }
+	}
+
+	@Override
+	public void run() {
+		System.out.println("Emailer running");
+		searchForEmailsToSend();
+		sendEmail(receiverEmail, emailSubject, emailContent);
+		
+	}
+
+	private void searchForEmailsToSend() {
+		// TODO Auto-generated method stub
+		
 	}
 }

@@ -59,8 +59,8 @@ public class MemoController {
 		ModelAndView mv = new ModelAndView();
 		mv.addObject("user", user);
 		mv.setViewName("login.jsp");
-		Emailer em = new Emailer();
-		em.test();
+		
+		//em.sendEmail(receiverEmail, emailSubject, emailContent);
 		return mv;
 	}
 	@RequestMapping("logout.do")
@@ -84,9 +84,9 @@ public class MemoController {
 	}
 	
 	@RequestMapping("newMemo.do")
-	public String loginPage(@ModelAttribute("user") User user, String name, String content){
+	public String createNewMemo(@ModelAttribute("user") User user, String name, String content, String sendTime){
 		System.out.println(user);
-		pdao.writeMemoToDb(user, name, content);
+		pdao.writeMemoToDb(user, name, content, sendTime);
 		return "redirect:redirect.do";
 	}
 	

@@ -1,5 +1,6 @@
 package io.hellsing.data;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 import org.springframework.stereotype.Component;
@@ -9,8 +10,8 @@ public class Memo {
 	private int id;
 	private String name;
 	private String content;
-	private Date sendTime;
-	
+	private LocalDateTime sendTime;
+	private String dateTime;
 	
 	public Memo(String name, String content) {
 		this.name = name;
@@ -21,11 +22,19 @@ public class Memo {
 	public Memo() {
 	}
 	
-	public Memo(int id, String name, String content, Date sendTime) {
+	public Memo(int id, String name, String content, LocalDateTime sendTime) {
 		this.id = id;
 		this.name = name;
 		this.content = content;
 		this.sendTime = sendTime;
+	}
+
+
+	public Memo(int int1, String string, String string2, String string3) {
+		this.id=int1;
+		this.name = string;
+		this.content=string2;
+		this.dateTime=string3;
 	}
 
 
@@ -57,12 +66,12 @@ public class Memo {
 	}
 
 
-	public Date getSendTime() {
+	public LocalDateTime getSendTime() {
 		return sendTime;
 	}
 
 
-	public void setSendTime(Date sendTime) {
+	public void setSendTime(LocalDateTime sendTime) {
 		this.sendTime = sendTime;
 	}
 	

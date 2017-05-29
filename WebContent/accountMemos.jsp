@@ -29,7 +29,7 @@
 				type="hidden" name="email" value="${sessionScope.user.email}">
 			<textarea name="content" style="height: 40px; width: 280px;"> </textarea>
 			Date to email this to you: (date and time):
-  			<input type="datetime-local" name="bdaytime">
+  			<input type="datetime-local" name="sendTime">
 			<button type="submit">Create new Memo</button>
 		</div>
 		</label>
