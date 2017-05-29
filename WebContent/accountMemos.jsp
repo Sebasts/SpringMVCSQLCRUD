@@ -6,7 +6,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<link href="<c:url value="/Master.css" />" rel="stylesheet">
+<link href="<c:url value="./Master.css" />" rel="stylesheet">
 <title>Your memos</title>
 	<c:if test="${empty user}">
 	<meta http-equiv="Refresh" content="0; url=./login.do">
@@ -63,14 +63,6 @@
 							}
 						}
 					</script>
-				</form>
-				<form action="updateMemo.do" method="POST">				
-				<input type="hidden" name="id" value="${user.id}"> <input
-				type="hidden" name="firstName" value="${user.firstName}"> <input
-				type="hidden" name="lastName" value="${user.lastName}"> <input
-				type="hidden" name="password" value="${user.password}"> <input
-				type="hidden" name="email" value="${user.email}">
-					<button type="submit">Updatess</button>
 				</form>
 			</div>
 		</c:forEach>
